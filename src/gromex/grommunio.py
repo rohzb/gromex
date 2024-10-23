@@ -1,6 +1,7 @@
 import os
 import caldav
 import getpass  # For safely asking for password
+from icalendar import Calendar,Event
 
 class Grommunio:
     def __init__(self, user=None, password=None, url="https://hope.helmholtz-berlin.de"):
@@ -83,12 +84,16 @@ class Calendars(Grommunio):
         for calendar in self.calendars:
             calendar_name = calendar.name.replace(" ", "_")  # Replace spaces in calendar names with underscores
             calendar_path = os.path.join(path, calendar_name)
+            
+            combined_cal = Calendar()
+            combined_calendar_path = os.path.join(path, f"{calendar_name}.ics")
 
             if not os.path.exists(calendar_path):
                 os.makedirs(calendar_path)  # Create a directory for each calendar
 
             events = calendar.events()  # Fetch all events for the calendar
             for event in events:
+                combined_cal.add_component(event.icalendar_component)
                 uid = str(event.icalendar_component['UID'])
                 data = event.data
                 filename = os.path.join(calendar_path, f"{uid}.ics")
@@ -97,8 +102,14 @@ class Calendars(Grommunio):
                 with open(filename, 'w') as ics_file:
                     ics_file.write(data)
 
+
                 print(f"Exported event {uid} to {filename}")
-                
+            
+            with open(combined_calendar_path, 'wb') as ics_file:
+                    ics_file.write(combined_cal.to_ical())
+            
+
+
 # Example usage with autoconnect (default):
 # cal = Calendars(username="john.doe", password="password")
 # cal.show_summary()

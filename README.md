@@ -1,4 +1,4 @@
-# gromex (GROMunnio EXport)
+# gromex (GROMMunio EXport)
 
 `gromex` is a Python module for exporting data from Grommunio. Currently, it supports exporting calendars via the `GrommunioCalendars` class.
 

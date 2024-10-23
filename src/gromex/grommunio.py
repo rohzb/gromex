@@ -1,7 +1,8 @@
 import os
 import caldav
 import getpass  # For safely asking for password
-from icalendar import Calendar,Event
+from icalendar import Calendar, Event
+from tqdm import tqdm  # For progress bar
 
 class Grommunio:
     def __init__(self, user=None, password=None, url="https://hope.helmholtz-berlin.de"):
@@ -92,7 +93,8 @@ class Calendars(Grommunio):
                 os.makedirs(calendar_path)  # Create a directory for each calendar
 
             events = calendar.events()  # Fetch all events for the calendar
-            for event in events:
+            # Use tqdm to show progress
+            for event in tqdm(events, desc=f"Exporting {calendar.name}"):
                 combined_cal.add_component(event.icalendar_component)
                 uid = str(event.icalendar_component['UID'])
                 data = event.data
@@ -101,20 +103,16 @@ class Calendars(Grommunio):
                 # Write event data to .ics file
                 with open(filename, 'w') as ics_file:
                     ics_file.write(data)
-
-
-                print(f"Exported event {uid} to {filename}")
             
+            # Export the combined .ics file for the calendar
             with open(combined_calendar_path, 'wb') as ics_file:
-                    ics_file.write(combined_cal.to_ical())
-            
-
+                ics_file.write(combined_cal.to_ical())
 
 # Example usage with autoconnect (default):
 # cal = Calendars(username="john.doe", password="password")
-# cal.show_summary()
+# cal.export(path="/path/to/export/directory")
 
 # Example usage with manual connect:
 # cal = Calendars(username="john.doe", password="password", autoconnect=False)
 # cal.connect()
-# cal.show_summary()
+# cal.export(path="/path/to/export/directory")

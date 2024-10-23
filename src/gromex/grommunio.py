@@ -1,3 +1,4 @@
+import os
 import caldav
 import getpass  # For safely asking for password
 
@@ -71,6 +72,33 @@ class Calendars(Grommunio):
             print(f" - VEVENT (Events): {event_count} items")
             print(f" - VTODO (Tasks): {task_count} items")
 
+    def export(self, path=None):
+        """ Export all calendars and events to the specified directory. """
+        if not path:
+            raise ValueError("The 'path' parameter is required.")
+        
+        if not os.path.exists(path):
+            os.makedirs(path)  # Create the base directory if it doesn't exist
+
+        for calendar in self.calendars:
+            calendar_name = calendar.name.replace(" ", "_")  # Replace spaces in calendar names with underscores
+            calendar_path = os.path.join(path, calendar_name)
+
+            if not os.path.exists(calendar_path):
+                os.makedirs(calendar_path)  # Create a directory for each calendar
+
+            events = calendar.events()  # Fetch all events for the calendar
+            for event in events:
+                uid = str(event.icalendar_component['UID'])
+                data = event.data
+                filename = os.path.join(calendar_path, f"{uid}.ics")
+
+                # Write event data to .ics file
+                with open(filename, 'w') as ics_file:
+                    ics_file.write(data)
+
+                print(f"Exported event {uid} to {filename}")
+                
 # Example usage with autoconnect (default):
 # cal = Calendars(username="john.doe", password="password")
 # cal.show_summary()

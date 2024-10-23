@@ -1,0 +1,6 @@
+ipython
+matplotlib
+jupyter
+
+
+caldav

@@ -1,0 +1,36 @@
+[project]
+name = "gromex"
+dynamic = ["version"]
+authors = [
+  { name="Ruslan Ovsyannikov" },
+  { name="Ruslan Ovsyannikov", email="ruslan.ovsyannikov@helmholtz-berlin.de" },
+]
+description = "Grommunio Export Tools"
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License"
+]
+
+dependencies = [
+            'cachetools',
+            'requests',
+            'pytz',
+            'tzlocal',
+            'tqdm',
+          ]
+
+[build-system]
+requires = [ "setuptools>=41", "wheel", "setuptools-git-versioning<2", ]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools-git-versioning]
+enabled = true
+
+[project.urls]
+#Homepage = "https://gitlab.helmholtz-berlin.de/ubjlcontrols/common/XYZ"
+#Source = "https://gitlab.helmholtz-berlin.de/ubjlcontrols/common/XYZ"
+#"Bug Tracker" = "https://gitlab.helmholtz-berlin.de/ubjlcontrols/common/XYZ/-/issues"
+#"wiki" = "https://gitlab.helmholtz-berlin.de/ubjlcontrols/common/XYZ/-/wikis"

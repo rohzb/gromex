@@ -1,0 +1,29 @@
+# Virtual environment
+.venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# pytest and covertage
+.pytest_cache/
+.benchmarks/
+.coverage
+
+# pakcage installation
+*.egg-info/
+
+# special/local paths
+local/
+localonly/
+/test.ipynb
+
+# code coverage 
+.coverage
+
+# Jupyter
+.ipynb_checkpoints
+
+# Other ignored files and paths
+.vscode/settings.json

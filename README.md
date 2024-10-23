@@ -37,6 +37,8 @@ This is an early version, and new features will be added based on user requests 
 
 For more detailed examples, refer to [example.ipynb](example.ipynb).
 
+Running the following example will create `.ics` files for all found calendars:
+
 ```python
 from gromex import GrommunioCalendars
 
@@ -48,6 +50,15 @@ grommunio.connect()
 
 # Step 3: Export calendars to the 'local/cals/' directory
 grommunio.export(path='local/cals/')
+```
+
+The above example will generate .ics files for all detected calendars, stored in the specified directory (local/cals/). For instance:
+```bash
+(.venv) vscode ➜ /workspaces/hzb-grommunio-export (master) $ ls -l local/cals/
+total 148
+-rw-r--r-- 1 vscode vscode 146340 Oct 23 16:15 Calendar.ics
+-rw-r--r-- 1 vscode vscode     32 Oct 23 16:15 Tasks.ics
+(.venv) vscode ➜ /workspaces/hzb-grommunio-export (master) $ 
 ```
 
 ### Connection Options

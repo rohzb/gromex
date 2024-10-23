@@ -1,6 +1,8 @@
 # gromex (GROMunnio EXport)
 
-`gromex` is a Python module designed for exporting calendars from a Grommunio CalDAV server using the `GrommunioCalendars` class.
+`gromex` is a Python module for exporting data from Grommunio. Currently, it supports exporting calendars via the `GrommunioCalendars` class.
+
+This is an early version, and new features will be added based on user requests and feedback. Feel free to suggest improvements or additional functionality!
 
 ## Table of Contents
 - [Installation](#installation)

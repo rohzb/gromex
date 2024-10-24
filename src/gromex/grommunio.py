@@ -1,5 +1,6 @@
 import os
 import caldav
+from caldav.lib.error import AuthorizationError
 import getpass  # For safely asking for password
 from icalendar import Calendar
 from tqdm import tqdm  # For progress bar
@@ -24,6 +25,11 @@ class GrommunioCalendars:
     cal.connect()
     cal.export(path="/path/to/export/directory", save_single_events=True, save_combined_calendar=True)
 
+    Class Attributes:
+    -----------------
+    default_max_retries : int
+        The default number of retries for password entry in case of an AuthorizationError.
+    
     Parameters:
     -----------
     username : str
@@ -35,6 +41,8 @@ class GrommunioCalendars:
     autoconnect : bool, optional
         Whether to automatically connect on class instantiation (default: True).
     """
+
+    default_max_retries = 3  # Class-level default for max retries
 
     def __init__(self, username: str, password: Optional[str] = None, 
                  url: str = "https://hope.helmholtz-berlin.de", autoconnect: bool = True) -> None:
@@ -62,9 +70,6 @@ class GrommunioCalendars:
         self.__connected = False
         self.principal = None
 
-        # Safely ask for the password if not provided
-        if password is None:
-            password = getpass.getpass(prompt="Enter your password: ")
         self.password = password
 
         self.calendar_url = f"{self.url}/dav/calendars/{self.username}/Calendar/"
@@ -73,27 +78,85 @@ class GrommunioCalendars:
         if autoconnect:
             self.connect()
 
-    def connect(self) -> None:
+    @property
+    def password(self) -> str:
+        """
+        Get or set the password for the Grommunio service.
+
+        Getter:
+        --------
+        If the password was not provided during instantiation, this property will 
+        prompt the user for the password securely using `getpass.getpass`. Once entered, 
+        the password will be stored for future use unless explicitly reset.
+
+        Setter:
+        --------
+        Setting the password allows you to manually specify or reset the password. If 
+        set to `None`, it will prompt for the password again the next time the `password` 
+        property is accessed.
+
+        Returns:
+        --------
+        str:
+            The password used for connecting to the Grommunio service.
+        """
+        if self._password is None:
+            self._password = getpass.getpass(prompt="Enter your password: ")
+        return self._password
+
+    @password.setter
+    def password(self, value: Optional[str]) -> None:
+        """
+        Set or reset the password for the Grommunio service.
+
+        If set to `None`, the password will be cleared and the user will be prompted 
+        for it again the next time the `password` property is accessed.
+        """
+        self._password = value
+
+
+
+    def connect(self, max_retries: Optional[int] = None) -> None:
         """
         Connect to the Grommunio CalDAV server.
 
         Establishes a connection with the CalDAV server using the provided credentials. 
-        If successful, it sets the principal user for further operations.
+        If authentication fails, it will prompt for the password again up to max_retries times.
+
+        Parameters:
+        -----------
+        max_retries : Optional[int], optional
+            The maximum number of password retries in case of an AuthorizationError. 
+            If not provided, uses the class-level default (`default_max_retries`).
 
         Raises:
         -------
         ConnectionError:
             If the connection to the CalDAV server fails.
         """
-        if not self.principal:
+        if max_retries is None:
+            max_retries = self.default_max_retries
+            
+        print("Connecting to Grommunio services...")
+        retries = 0
+        while retries < max_retries:
             try:
-                print("Connecting to Grommunio services...")
-                self.client = caldav.DAVClient(url=self.calendar_url, username=self.username, password=self.password)
-                self.principal = self.client.principal()
-                print(f"Connected to CalDAV for {self.principal.get_display_name()}.")
-                self.__connected = True
+                if not self.principal:
+                    self.client = caldav.DAVClient(url=self.calendar_url, username=self.username, password=self.password)
+                    self.principal = self.client.principal()
+                    print(f"Connected to CalDAV for {self.principal.get_display_name()}.")
+                    self.__connected = True
+                    break  # Exit loop after successful connection
+            except AuthorizationError:
+                print("Authorization failed. Please try again.")
+                self.password = None
+                retries += 1
             except Exception as e:
                 raise ConnectionError(f"Failed to connect to CalDAV server: {e}")
+
+        if retries == max_retries:
+            raise ConnectionError("Maximum password retries exceeded. Failed to connect to the CalDAV server.")
+
 
     @property
     def calendars(self) -> List[caldav.objects.Calendar]:

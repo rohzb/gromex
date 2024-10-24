@@ -2,35 +2,44 @@
 name = "gromex"
 dynamic = ["version"]
 authors = [
-  { name="Ruslan Ovsyannikov" },
-  { name="Ruslan Ovsyannikov", email="ruslan.ovsyannikov@helmholtz-berlin.de" },
+  { name="Ruslan Ovsyannikov", email="ruslan.ovsyannikov@helmholtz-berlin.de" }
 ]
-description = "Grommunio Export Tools"
+description = "Tools for exporting data from Grommunio servers."
 readme = "README.md"
 license = { file="LICENSE" }
 requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License"
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Information Technology",
+    "Operating System :: OS Independent",
+    "Topic :: Office/Business :: Groupware",
+    "Topic :: Communications :: Email",
+    "Topic :: Utilities",
+    "Natural Language :: English"
 ]
+keywords = ["Grommunio", "calendar export", "CalDAV", "ICS", "groupware"]
 
 dependencies = [
-            'cachetools',
-            'requests',
-            'pytz',
-            'tzlocal',
-            'tqdm',
-          ]
+    'caldav',
+    'tqdm',
+]
 
 [build-system]
-requires = [ "setuptools>=41", "wheel", "setuptools-git-versioning<2", ]
+requires = ["setuptools>=41", "wheel", "setuptools-git-versioning<2"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools-git-versioning]
 enabled = true
 
 [project.urls]
-#Homepage = "https://gitlab.helmholtz-berlin.de/ubjlcontrols/common/XYZ"
-#Source = "https://gitlab.helmholtz-berlin.de/ubjlcontrols/common/XYZ"
-#"Bug Tracker" = "https://gitlab.helmholtz-berlin.de/ubjlcontrols/common/XYZ/-/issues"
-#"wiki" = "https://gitlab.helmholtz-berlin.de/ubjlcontrols/common/XYZ/-/wikis"
+Homepage = "https://github.com/rohzb/gromex"
+Source = "https://github.com/rohzb/gromex"
+BugTracker = "https://github.com/rohzb/gromex/issues"
+Wiki = "https://github.com/rohzb/gromex/wiki"

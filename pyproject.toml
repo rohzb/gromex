@@ -38,6 +38,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools-git-versioning]
 enabled = true
 
+[project.scripts]
+gromex = "gromex.gromex_cli:main"
+
 [project.urls]
 Homepage = "https://github.com/rohzb/gromex"
 Source = "https://github.com/rohzb/gromex"

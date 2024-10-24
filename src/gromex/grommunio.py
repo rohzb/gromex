@@ -74,6 +74,9 @@ class GrommunioCalendars:
 
         self.calendar_url = f"{self.url}/dav/calendars/{self.username}/Calendar/"
 
+        # Supress loggin from the caldav module
+        caldav.lib.vcal.fixup_error_loggings = 42 # errors are rate limited - pretend there was a lot of errors
+
         # Automatically connect if autoconnect is True
         if autoconnect:
             self.connect()
@@ -136,7 +139,7 @@ class GrommunioCalendars:
         """
         if max_retries is None:
             max_retries = self.default_max_retries
-            
+
         print("Connecting to Grommunio services...")
         retries = 0
         while retries < max_retries:

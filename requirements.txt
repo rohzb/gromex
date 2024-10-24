@@ -1,6 +1,3 @@
 ipython
 matplotlib
 jupyter
-
-
-caldav

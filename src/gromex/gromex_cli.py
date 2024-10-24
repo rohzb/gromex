@@ -15,7 +15,7 @@ def main():
         """,
         epilog="""
         Example:
-        gromex username@example.com /path/to/export --save-separate
+        gromex username@example.com /path/to/export --save-separate --server https://example.com
         gromex username@example.com /path/to/export --password yourpassword --save-separate
         """,
         formatter_class=argparse.RawTextHelpFormatter
@@ -28,12 +28,13 @@ def main():
     # Optional arguments
     parser.add_argument('--password', type=str, help="Password for the Grommunio account (optional)")
     parser.add_argument('--save-separate', action='store_true', help="Save each event as a separate .ics file")
+    parser.add_argument('--server', type=str, default="https://hope.helmholtz-berlin.de", help="CalDAV server URL (default: https://hope.helmholtz-berlin.de)")
     parser.add_argument('--version', action='version', version=f"%(prog)s {version}", help="Show gromex version and exit")
 
     args = parser.parse_args()
 
     # Create an instance of GrommunioCalendars using autoconnect
-    grommunio = GrommunioCalendars(username=args.username, password=args.password, autoconnect=True)
+    grommunio = GrommunioCalendars(username=args.username, password=args.password, url=args.server, autoconnect=True)
 
     # Export calendars
     grommunio.export(path=args.destination, save_single_events=args.save_separate)

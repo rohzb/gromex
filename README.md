@@ -1,18 +1,24 @@
-# gromex (GROMMunio EXport)
+# gromex (GROMmunio EXport)
 
-`gromex` is a Python module for exporting data from Grommunio. Currently, it supports exporting calendars via the `GrommunioCalendars` class.
+`gromex` is a Python module for exporting data from Grommunio. It can be used either directly as a Python library or as a command-line utility to export calendar data.
+
+- **Library**: Programmatically connect to a Grommunio CalDAV server and export calendar data using the `GrommunioCalendars` class.
+- **Command-line Utility**: Easily export calendar data from the terminal with the `gromex` command.
 
 This is an early version, and new features will be added based on user requests and feedback. Feel free to suggest improvements or additional functionality!
 
 ## Table of Contents
 - [Installation](#installation)
-- [Usage](#usage)
-  - [Example](#example)
+- [Library Usage](#library-usage)
+  - [Library Example](#library-example)
   - [Connection Options](#connection-options)
   - [Password Options](#password-options)
   - [Viewing Calendar Summary](#viewing-calendar-summary)
   - [Exporting Calendars](#exporting-calendars)
     - [Export Options](#export-options)
+- [Command Line Utility](#command-line-utility)
+  - [Command Line Example](#command-line-example)
+  - [Command Line Options](#command-line-options)
 - [Known Issues](#known-issues)
 - [License](#license)
 
@@ -31,9 +37,9 @@ This is an early version, and new features will be added based on user requests 
     ./scripts/bootstrap.sh
     ```
 
-## Usage
+## Library Usage
 
-### Example
+### Library Example
 
 For more detailed examples, refer to [example.ipynb](example.ipynb).
 
@@ -43,7 +49,7 @@ Running the following example will create `.ics` files for all found calendars:
 from gromex import GrommunioCalendars
 
 # Step 1: Create an instance of GrommunioCalendars
-grommunio = GrommunioCalendars(username="ovsyannikov@helmholtz-berlin.de", autoconnect=False)
+grommunio = GrommunioCalendars(username="john.doe@helmholtz-berlin.de", autoconnect=False)
 
 # Step 2: Manually connect to the Grommunio CalDAV server
 grommunio.connect()
@@ -52,42 +58,42 @@ grommunio.connect()
 grommunio.export(path='local/cals/')
 ```
 
-The above example will generate .ics files for all detected calendars, stored in the specified directory (local/cals/). For instance:
-```bash
-(.venv) vscode ➜ /workspaces/hzb-grommunio-export (master) $ ls -l local/cals/
-total 148
--rw-r--r-- 1 vscode vscode 146340 Oct 23 16:15 Calendar.ics
--rw-r--r-- 1 vscode vscode     32 Oct 23 16:15 Tasks.ics
-(.venv) vscode ➜ /workspaces/hzb-grommunio-export (master) $ 
-```
-
 ### Connection Options
 
 - **`autoconnect=True`** (default): Automatically connects to the CalDAV server when creating the instance.
   
   ```python
-  grommunio = GrommunioCalendars(username="ovsyannikov@helmholtz-berlin.de")  # Automatically connects
+  grommunio = GrommunioCalendars(username="john.doe@helmholtz-berlin.de")  # Automatically connects
   ```
 
 - **`autoconnect=False`**: Requires manually calling the `connect()` method to establish a connection.
 
   ```python
-  grommunio = GrommunioCalendars(username="ovsyannikov@helmholtz-berlin.de", autoconnect=False)
+  grommunio = GrommunioCalendars(username="john.doe@helmholtz-berlin.de", autoconnect=False)
   grommunio.connect()  # Manually connects
   ```
+
+- **Using a Custom Server**: To connect to a different CalDAV server, pass the `url` parameter to the constructor. The default server is `https://hope.helmholtz-berlin.de`, but you can override it like this:
+
+  ```python
+  grommunio = GrommunioCalendars(username="john.doe@helmholtz-berlin.de", url="https://custom-server.com")
+  ```
+
+  This will connect to the specified server instead of the default.
+
 
 ### Password Options
 
 1. **Pass Password Directly**: Provide the password directly when creating the instance (avoid hardcoding sensitive data).
 
    ```python
-   grommunio = GrommunioCalendars(username="ovsyannikov@helmholtz-berlin.de", password="yourpassword")
+   grommunio = GrommunioCalendars(username="john.doe@helmholtz-berlin.de", password="yourpassword")
    ```
 
 2. **Prompt for Password**: If no password is provided, the system will prompt you to securely input it.
 
    ```python
-   grommunio = GrommunioCalendars(username="ovsyannikov@helmholtz-berlin.de")
+   grommunio = GrommunioCalendars(username="john.doe@helmholtz-berlin.de")
    ```
 
 ### Viewing Calendar Summary
@@ -121,30 +127,41 @@ The `export()` method exports calendar data to a specified directory.
   grommunio.export(path='local/cals/', save_single_events=True, save_combined_calendar=True)
   ```
 
+## Command Line Utility
+
+The `gromex` command-line utility allows you to export calendar data directly from the terminal.
+
+### Command Line Example:
+
+```bash
+gromex [username] [destination] [--server SERVER_URL] [--password PASSWORD] [--save-separate]
+```
+
+#### Example Usage:
+
+- Using the default Grommunio server:
+  
+  ```bash
+  gromex username@example.com /path/to/export --save-separate
+  ```
+
+- Specifying a custom server:
+
+  ```bash
+  gromex username@example.com /path/to/export --server https://example.com --save-separate
+  ```
+
+### Command Line Options:
+
+- `username`: Grommunio account username (e.g., `user@example.com`).
+- `destination`: Directory to save the exported `.ics` files.
+- `--server`: Optional. Specify the CalDAV server URL (default: `https://hope.helmholtz-berlin.de`).
+- `--password`: Optional. Provide the password for the Grommunio account. If not provided, it will prompt for input.
+- `--save-separate`: Optional. If included, saves each event as a separate `.ics` file.
+
 ## Known Issues
 
-1. **Timezone Compatibility**:
-   - Some events may raise errors due to Grommunio's incompatibility with iCal time zones:
-     ```
-     ERROR:root:Ical data was modified to avoid compatibility issues
-     (Your calendar server breaks the icalendar standard)
-     This is probably harmless, particularly if not editing events or tasks
-     (error count: 1 - this error is ratelimited)
-     NoneType: None
-     ERROR:root:--- 
-     +++ 
-     @@ -30,7 +30,6 @@
-     SUMMARY;LANGUAGE=en-us:NTT meets HZB-AOT
-     DTSTART;TZID=W. Europe Standard Time:20240701T110000
-     DTEND;TZID=W. Europe Standard Time:20240701T120000
-     -DUE;TZID=W. Europe Standard Time:20240626T120000
-     CLASS:PUBLIC
-     PRIORITY:5
-     X-MICROSOFT-CDO-IMPORTANCE:1
-     ```
-     These errors can be ignored; they don’t affect functionality.
-
-2. **Recurring Events Import**:
+1. **Recurring Events Import**:
    - Importing `.ics` files into Exchange has issues with recurring events - they do not show up. That problem is under investigation now...
 
 ## License
